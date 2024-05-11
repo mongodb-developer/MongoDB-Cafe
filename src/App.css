@@ -1,0 +1,139 @@
+.app {
+  text-align: center;
+  background-color: #121212;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; 
+  align-items: center;
+  padding-top: 50px; 
+  padding-bottom: 80px; 
+}
+
+.title {
+  font-family: 'Pacifico', cursive;
+  font-size: 4em;
+  font-weight: bold;
+  margin-top: 0; 
+  margin-bottom: 150px;
+  color: #0f0;
+  text-shadow: 2px 2px 4px #000;
+}
+
+.drinks-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  width: 100%;
+  margin-bottom: 50px;
+}
+
+.drink {
+  flex: 1 1 200px;
+  padding: 20px;
+  margin: 20px;
+  transition: transform 0.3s;
+}
+
+.drink:hover {
+  transform: scale(1.1);
+}
+
+.drink-icon {
+  width: 100px;
+  height: auto;
+  margin-bottom: 15px;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 15px;
+  font-size: 1em;
+  background-color: #deb887;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 2px 2px 4px #000;
+}
+
+.total-counter, .sync-button {
+  font-size: 20px;
+  color: #0f0;
+  background: #333;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px #000;
+  margin-top: 20px;
+  transition: transform 0.3s ease;
+}
+
+.sync-button {
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sync-button:hover {
+  background-color: #444;
+  transform: scale(1.05);
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 1em;
+  color: #aaa;
+  padding: 20px 0;
+}
+
+.daily-coffee-counter {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #444;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px #000;
+  color: #0f0; 
+  font-size: 1.5em;
+  text-shadow: 1px 1px 2px #000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.daily-coffee-label {
+  
+}
+
+.daily-coffee-count {
+  font-weight: bold;
+  color: #fff; 
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  font-family: 'Arial', sans-serif; 
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1); /* shadow depth */
+  border-top: 3px solid #deb887; 
+}
+
+.footer p {
+  margin: 0;
+  padding: 0;
+  font-size: 1.2em;
+  letter-spacing: 0.05em; 
+  text-shadow: 1px 1px 2px #000; 
+}
+
