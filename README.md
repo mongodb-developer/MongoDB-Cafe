@@ -1,5 +1,6 @@
 # Description:
 MongoCoffeeMenu is a web app built based on Atlas Device SDK for the Web(https://www.mongodb.com/docs/atlas/device-sdks/web/). 
+
 The app works as a very simple coffee conusmption calculator that allows the user to select what coffee they had during the day and sync the total amount of coffee consumption with MongoDB Atlas. 
 
 ## Components:
@@ -9,3 +10,5 @@ The app works as a very simple coffee conusmption calculator that allows the use
 ## Useful commands:
 1. npm install: After downloading the app please use this command in terminal to install the necessary dependencies.
 2. npm start: Use this command to start the web app
+
+![](https://github.com/mongodb-developer/MongoDB-Cafe/blob/main/CafeScreenshot.png)
