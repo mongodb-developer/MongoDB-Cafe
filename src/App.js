@@ -3,9 +3,9 @@ import * as Realm from 'realm-web';
 import './App.css';
 import Footer from './Footer';
 
-//================Init Realm below
-const REALM_APP_ID = 'YOUR APP ID'; // Replace with your App ID
-const app = new Realm.App({ id: REALM_APP_ID });
+// Initialize Realm
+const ATLAS_APP_ID = 'YOUR_APP_ID'; // Replace with your App ID
+const app = new Realm.App({ id: ATLAS_APP_ID });
 
 const drinksData = [
   { name: 'Americano', icon: 'americano_icon.png' },
@@ -17,13 +17,14 @@ const drinksData = [
 // Cache MongoDB collection
 let coffeeCollection;
 
+// Initialize application and login
 async function initializeApp() {
   const user = await app.logIn(Realm.Credentials.anonymous());
-  const mongodb = user.mongoClient('mongodb-atlas'); // Adjust with your 'Service Name'
+  const mongodb = user.mongoClient('mongodb-atlas');
   coffeeCollection = mongodb.db('Cluster0').collection('CoffeeConsumption');
 }
 
-// CRUD functions
+
 async function syncCoffeeConsumption(total) {
   await coffeeCollection.updateOne(
     { user_id: app.currentUser.id },
@@ -32,16 +33,25 @@ async function syncCoffeeConsumption(total) {
   );
 }
 
+// Fetch coffee consumption from the database
 async function fetchCoffeeConsumption() {
   const data = await coffeeCollection.findOne({ user_id: app.currentUser.id });
   return data ? data.consumed : 0;
 }
 
+// Initialization function for drinksCount
+const initDrinksCount = () => drinksData.reduce((acc, drink) => ({
+  ...acc,
+  [drink.name]: 0
+}), {});
+
 function App() {
-  const [drinksCount, setDrinksCount] = useState(
-    drinksData.reduce((acc, drink) => ({ ...acc, [drink.name]: 0 }), {})
-  );
+  const [drinksCount, setDrinksCount] = useState(initDrinksCount);
   const [syncedDrinks, setSyncedDrinks] = useState(0);
+
+  useEffect(() => {
+    initializeApp();
+  }, []);
 
   const incrementCount = (drinkName) => {
     setDrinksCount((prevCounts) => ({
@@ -57,7 +67,6 @@ function App() {
     }));
   };
 
-  //Function used to calculate the total amount of coffee 
   const handleSync = async () => {
     const totalDrinks = Object.values(drinksCount).reduce((acc, count) => acc + count, 0);
     await syncCoffeeConsumption(totalDrinks);
@@ -95,4 +104,3 @@ function App() {
 }
 
 export default App;
-
