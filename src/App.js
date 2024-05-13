@@ -14,32 +14,26 @@ const drinksData = [
   { name: 'Latte Macchiato', icon: 'latte_macchiato_icon.png' }
 ];
 
-//================Realm user login below. Here we use anonymous login
-async function login() {
-  if (!app.currentUser) {
-    await app.logIn(Realm.Credentials.anonymous());
-  }
-  return app.currentUser;
-}
-//================Set Realm Service Name, app backend collection name and what to CRUD
-async function syncCoffeeConsumption(total) {
-  const user = await login();
-  const mongodb = user.mongoClient('mongodb-atlas'); //Replace this with the 'Service Name' within Linked Data Sources
-  const coffeeCollection = mongodb.db('Cluster0').collection('CoffeeConsumption');
+// Cache MongoDB collection
+let coffeeCollection;
 
-  await coffeeCollection.updateOne( //Here using updateOne(Node.js driver)to write total coffee consumption number to backend.  
-    { user_id: user.id },
+async function initializeApp() {
+  const user = await app.logIn(Realm.Credentials.anonymous());
+  const mongodb = user.mongoClient('mongodb-atlas'); // Adjust with your 'Service Name'
+  coffeeCollection = mongodb.db('Cluster0').collection('CoffeeConsumption');
+}
+
+// CRUD functions
+async function syncCoffeeConsumption(total) {
+  await coffeeCollection.updateOne(
+    { user_id: app.currentUser.id },
     { $set: { consumed: total } },
     { upsert: true }
   );
 }
-//================ func for fetching data FROM backend.
-async function fetchCoffeeConsumption() {
-  const user = await login();
-  const mongodb = user.mongoClient('mongodb-atlas');
-  const coffeeCollection = mongodb.db('Cluster0').collection('CoffeeConsumption');
 
-  const data = await coffeeCollection.findOne({ user_id: user.id }); //Using `findOne` to find and fetch the total coffee consumption. 
+async function fetchCoffeeConsumption() {
+  const data = await coffeeCollection.findOne({ user_id: app.currentUser.id });
   return data ? data.consumed : 0;
 }
 
