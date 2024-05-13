@@ -3,9 +3,9 @@ import * as Realm from 'realm-web';
 import './App.css';
 import Footer from './Footer';
 
-//================Init Realm below
-const REALM_APP_ID = 'YOUR APP ID'; // Replace with your App ID
-const app = new Realm.App({ id: REALM_APP_ID });
+// Initialize Realm
+const ATLAS_APP_ID = 'YOUR_APP_ID'; // Replace with your App ID
+const app = new Realm.App({ id: ATLAS_APP_ID });
 
 const drinksData = [
   { name: 'Americano', icon: 'americano_icon.png' },
@@ -14,40 +14,44 @@ const drinksData = [
   { name: 'Latte Macchiato', icon: 'latte_macchiato_icon.png' }
 ];
 
-//================Realm user login below. Here we use anonymous login
-async function login() {
-  if (!app.currentUser) {
-    await app.logIn(Realm.Credentials.anonymous());
-  }
-  return app.currentUser;
-}
-//================Set Realm Service Name, app backend collection name and what to CRUD
-async function syncCoffeeConsumption(total) {
-  const user = await login();
-  const mongodb = user.mongoClient('mongodb-atlas'); //Replace this with the 'Service Name' within Linked Data Sources
-  const coffeeCollection = mongodb.db('Cluster0').collection('CoffeeConsumption');
+// Cache MongoDB collection
+let coffeeCollection;
 
-  await coffeeCollection.updateOne( //Here using updateOne(Node.js driver)to write total coffee consumption number to backend.  
-    { user_id: user.id },
+// Initialize application and login
+async function initializeApp() {
+  const user = await app.logIn(Realm.Credentials.anonymous());
+  const mongodb = user.mongoClient('mongodb-atlas');
+  coffeeCollection = mongodb.db('Cluster0').collection('CoffeeConsumption');
+}
+
+
+async function syncCoffeeConsumption(total) {
+  await coffeeCollection.updateOne(
+    { user_id: app.currentUser.id },
     { $set: { consumed: total } },
     { upsert: true }
   );
 }
-//================ func for fetching data FROM backend.
-async function fetchCoffeeConsumption() {
-  const user = await login();
-  const mongodb = user.mongoClient('mongodb-atlas');
-  const coffeeCollection = mongodb.db('Cluster0').collection('CoffeeConsumption');
 
-  const data = await coffeeCollection.findOne({ user_id: user.id }); //Using `findOne` to find and fetch the total coffee consumption. 
+// Fetch coffee consumption from the database
+async function fetchCoffeeConsumption() {
+  const data = await coffeeCollection.findOne({ user_id: app.currentUser.id });
   return data ? data.consumed : 0;
 }
 
+// Initialization function for drinksCount
+const initDrinksCount = () => drinksData.reduce((acc, drink) => ({
+  ...acc,
+  [drink.name]: 0
+}), {});
+
 function App() {
-  const [drinksCount, setDrinksCount] = useState(
-    drinksData.reduce((acc, drink) => ({ ...acc, [drink.name]: 0 }), {})
-  );
+  const [drinksCount, setDrinksCount] = useState(initDrinksCount);
   const [syncedDrinks, setSyncedDrinks] = useState(0);
+
+  useEffect(() => {
+    initializeApp();
+  }, []);
 
   const incrementCount = (drinkName) => {
     setDrinksCount((prevCounts) => ({
@@ -63,7 +67,6 @@ function App() {
     }));
   };
 
-  //Function used to calculate the total amount of coffee 
   const handleSync = async () => {
     const totalDrinks = Object.values(drinksCount).reduce((acc, count) => acc + count, 0);
     await syncCoffeeConsumption(totalDrinks);
@@ -101,4 +104,3 @@ function App() {
 }
 
 export default App;
-
